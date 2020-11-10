@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*-hetzner*'
+      - 'v*-debug*'
 
 jobs:
   build_iso:
@@ -18,7 +19,7 @@ jobs:
             isolinux \
             genisoimage
       - name: build cloud/hetzner
-        run: make -C src bin/ipxe.iso CONFIG=cloud EMBED=config/cloud/hetzner.ipxe
+        run: make -C src bin/ipxe.iso CONFIG=hcloud EMBED=config/hcloud/hetzner.ipxe
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
