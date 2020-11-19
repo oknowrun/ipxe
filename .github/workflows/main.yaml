@@ -18,8 +18,10 @@ jobs:
           sudo apt-get -y install \
             isolinux \
             genisoimage
-      - name: build cloud/hetzner
+      - name: build cloud/hetzner ISO
         run: make -C src bin/ipxe.iso CONFIG=hcloud EMBED=config/hcloud/hetzner.ipxe
+      - name: build cloud/hetzner USB
+        run: make -C src bin/ipxe.usb CONFIG=hcloud EMBED=config/hcloud/hetzner.ipxe
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -31,7 +33,7 @@ jobs:
           draft: false
           prerelease: false
       - name: Upload Release Asset
-        id: upload-release-asset 
+        id: upload-release-asset-iso
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,3 +42,13 @@ jobs:
           asset_path: src/bin/ipxe.iso
           asset_name: ipxe-hetzner.iso
           asset_content_type: application/x-iso9660-image
+      - name: Upload Release Asset
+        id: upload-release-asset-usb
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: src/bin/ipxe.usb
+          asset_name: ipxe-hetzner.usb
+          asset_content_type: application/octet-stream
